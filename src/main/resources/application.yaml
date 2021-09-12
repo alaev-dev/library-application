@@ -1,0 +1,9 @@
+spring:
+  shell:
+    interactive:
+      enabled: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/library
+    username: postgres
+    password: root
