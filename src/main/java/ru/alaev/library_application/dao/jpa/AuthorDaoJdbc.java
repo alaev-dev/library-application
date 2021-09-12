@@ -49,7 +49,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         Map<String, Object> params = Collections.singletonMap("author_name", author);
 
         final List<Author> authors =
-                jdbc.query("select * from author where author_name = : author_name", params, new AuthorMapper());
+                jdbc.query("select * from author where author_name = :author_name", params, new AuthorMapper());
 
         return authors.size() == 0 ? Optional.empty() : Optional.of(authors.get(0).getId());
     }
@@ -58,8 +58,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 
         @Override
         public Author mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Author(rs.getLong("id_author"),
-                    rs.getString("author_name"));
+            return new Author(rs.getLong("id_author"), rs.getString("author_name"));
         }
     }
 }

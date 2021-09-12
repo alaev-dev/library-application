@@ -77,9 +77,8 @@ class BookDaoJdbcTest {
 
     @Test
     void shouldReturnFalseIfBookNotExist() {
-        final boolean isExistBook = bookDao.isExistBook(new Book(ORWELL_WRONG_NAME_BOOK,
-                ORWELL_ID_AUTHOR,
-                ORWELL_ID_STYLE));
+        final boolean isExistBook = bookDao.isExistBook(
+                new Book(ORWELL_WRONG_NAME_BOOK, ORWELL_ID_AUTHOR, ORWELL_ID_STYLE));
 
         assertThat(isExistBook).isFalse();
     }
