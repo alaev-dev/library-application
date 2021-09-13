@@ -10,14 +10,29 @@ import ru.alaev.library_application.service.LibraryService;
 public class LibraryCommand {
     private final LibraryService service;
 
-    @ShellMethod(key = "add_B", value = "add new book")
+    @ShellMethod(key = "addBook", value = "add new book")
     public String addNewBook(String bookName, String author, String style) {
-        return service.addBookOrReturnFalse(bookName, author, style) ? "successfully" : "fail: maybe this book is already exist";
+        return service.addBookOrReturnFalse(bookName, author,
+                                            style) ? "successfully" : "fail: maybe this book is already exist";
     }
 
-    @ShellMethod(key = "list_A", value = "list all author")
+    @ShellMethod(key = "authors", value = "list all author")
     public String listAuthors() {
-        return service.listAllAuthors();
+        return service.getAllAuthorsInOneString();
     }
 
+    @ShellMethod(key = "styles", value = "list all styles")
+    public String listStyle() {
+        return service.getAllStylesInOneString();
+    }
+
+    @ShellMethod(key = "addStyle", value = "add new style")
+    public String addNewStyle(String name) {
+        return service.addNewStyleOrReturnFalse(name) ? "successfully" : "fail: maybe this style is already exist";
+    }
+
+    @ShellMethod(key = "books", value = "list all books")
+    public String listBooks() {
+        return service.getAllBooksInOneString();
+    }
 }

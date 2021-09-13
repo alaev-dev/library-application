@@ -7,6 +7,7 @@ import ru.alaev.library_application.dao.BookDao;
 import ru.alaev.library_application.dao.StyleDao;
 import ru.alaev.library_application.domain.Author;
 import ru.alaev.library_application.domain.Book;
+import ru.alaev.library_application.domain.Style;
 import ru.alaev.library_application.service.execption.AuthorNotFoundException;
 import ru.alaev.library_application.service.execption.StyleNotFoundException;
 
@@ -32,9 +33,37 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Override
-    public String listAllAuthors() {
+    public String getAllAuthorsInOneString() {
         return authorDao.getAllAuthors().stream()
                 .map(Author::getName)
+                .collect(Collectors.joining("\n"));
+    }
+
+    @Override
+    public String getAllStylesInOneString() {
+        return styleDao.getAllStyles().stream()
+                .map(Style::getName)
+                .collect(Collectors.joining("\n"));
+    }
+
+    @Override
+    public boolean addNewStyleOrReturnFalse(String name) {
+        if (styleDao.isExistStyle(name)) return false;
+
+        styleDao.save(new Style(name));
+        return true;
+    }
+
+    @Override
+    public String getAllBooksInOneString() {
+        return bookDao.getAllBooks().stream()
+                .map(book -> book.getName() + " " +
+                        styleDao.getStyleNameById(book.getIdStyle())
+                                .orElseThrow(
+                                        () -> new StyleNotFoundException(String.valueOf(book.getIdStyle()))) + " " +
+                        authorDao.getAuthorById(book.getIdAuthor())
+                                .orElseThrow(() -> new AuthorNotFoundException(String.valueOf(book.getIdAuthor())))
+                                .getName())
                 .collect(Collectors.joining("\n"));
     }
 }

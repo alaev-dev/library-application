@@ -21,7 +21,11 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public Optional<Author> getAuthorById(long id) {
-        return Optional.empty();
+        final List<Author> authors = jdbc.query("select * from author where id_author =:idAuthor",
+                                                Map.of("idAuthor", id),
+                                                new AuthorMapper());
+
+        return authors.size() == 0 ? Optional.empty() : Optional.of(authors.get(0));
     }
 
     @Override

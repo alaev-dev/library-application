@@ -7,5 +7,11 @@ public interface LibraryService {
 
     boolean addBookOrReturnFalse(String bookName, String author, String style) throws StyleNotFoundException, AuthorNotFoundException;
 
-    String listAllAuthors();
+    String getAllAuthorsInOneString();
+
+    String getAllStylesInOneString();
+
+    boolean addNewStyleOrReturnFalse(String name);
+
+    String getAllBooksInOneString();
 }
