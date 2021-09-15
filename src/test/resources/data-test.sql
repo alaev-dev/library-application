@@ -1,12 +1,12 @@
-insert into author (author_name)
+insert into authors (name)
 values ('Pushkin');
-insert into author (author_name)
+insert into authors (name)
 values ('Orwell');
 
-insert into style (st_name)
+insert into styles (name)
 values ('Novel');
 
-insert into book (b_name, id_author, id_style)
+insert into books (name, author_id, style_id)
 VALUES ('1984', 2, 1);
-insert into book (b_name, id_author, id_style)
+insert into books (name, author_id, style_id)
 VALUES ('Eugene Onegin', 1, 1);

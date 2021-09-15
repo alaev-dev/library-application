@@ -1,24 +1,40 @@
 package ru.alaev.library_application.domain;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "books",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"name", "style_id", "author_id"}))
 public class Book {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
-    private long idAuthor;
-    private long idStyle;
 
-    public Book(long id, String name, long idAuthor, long idStyle) {
-        this.id = id;
-        this.name = name;
-        this.idAuthor = idAuthor;
-        this.idStyle = idStyle;
-    }
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
+    private Author author;
 
-    public Book(String name, long idAuthor, long idStyle) {
-        this.name = name;
-        this.idAuthor = idAuthor;
-        this.idStyle = idStyle;
-    }
+    @ManyToOne(targetEntity = Style.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "style_id")
+    private Style style;
 }

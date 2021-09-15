@@ -1,43 +1,60 @@
 package ru.alaev.library_application.dao.jpa;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.alaev.library_application.dao.BookDao;
+import ru.alaev.library_application.domain.Author;
 import ru.alaev.library_application.domain.Book;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import ru.alaev.library_application.domain.Style;
 
 @Repository
 @RequiredArgsConstructor
 public class BookDaoJdbc implements BookDao {
+
     private final NamedParameterJdbcOperations jdbc;
 
     @Override
     public Optional<Book> getBookById(long id) {
-        Map<String, Object> params = Collections.singletonMap("id", id);
-
-        final List<Book> books = jdbc.query("select * from book where id_book = :id", params, new BookMapper());
+        final List<Book> books = jdbc.query(
+            "SELECT B.id, B.name book_name, AU.name author_name, author_id, S.name style_name, style_id "
+                + "FROM BOOKS B "
+                + "         LEFT JOIN AUTHORS AU ON B.AUTHOR_ID = AU.ID "
+                + "         LEFT JOIN STYLES S ON S.ID = B.STYLE_ID "
+                + "WHERE B.id = :ID",
+            Map.of("ID", id), new BookMapper());
 
         return books.size() == 0 ? Optional.empty() : Optional.of(books.get(0));
     }
 
     @Override
     public List<Book> getAllBooks() {
-        return jdbc.query("select * from book", new BookMapper());
+        return jdbc.query(
+            "SELECT B.id, B.name book_name, AU.name author_name, author_id, S.name style_name, style_id "
+                + "FROM BOOKS B "
+                + "         LEFT JOIN AUTHORS AU ON B.AUTHOR_ID = AU.ID "
+                + "         LEFT JOIN STYLES S ON S.ID = B.STYLE_ID",
+            new BookMapper());
     }
 
     @Override
     public void saveBook(Book book) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", book.getName());
-        params.put("id_author", book.getIdAuthor());
-        params.put("id_style", book.getIdStyle());
+        params.put("NAME", book.getName());
+        params.put("AUTHOR_ID", book.getAuthor().getId());
+        params.put("STYLE_ID", book.getStyle().getId());
 
-        jdbc.update("insert into book (b_name, id_author, id_style) values (:name, :id_author, :id_style)", params);
+        jdbc.update(
+            "INSERT INTO BOOKS(NAME, AUTHOR_ID, STYLE_ID) "
+                + "VALUES (:NAME, :AUTHOR_ID, :STYLE_ID)",
+            params);
     }
 
     @Override
@@ -53,26 +70,34 @@ public class BookDaoJdbc implements BookDao {
     @Override
     public boolean isExistBook(Book book) {
         Map<String, Object> params = new HashMap<>();
-        params.put("name", book.getName());
-        params.put("id_author", book.getIdAuthor());
-        params.put("id_style", book.getIdStyle());
+        params.put("NAME", book.getName());
+        params.put("AUTHOR_NAME", book.getAuthor().getName());
+        params.put("STYLE_NAME", book.getStyle().getName());
 
-        final List<Book> books = jdbc.query(
-                "select * from book where b_name = :name and id_author = :id_author and id_style = :id_style",
-                params,
-                new BookMapper());
+        final Integer count_rows = jdbc.queryForObject(
+            "SELECT COUNT(B.ID) "
+                + "FROM BOOKS B "
+                + "         LEFT JOIN AUTHORS AU ON B.AUTHOR_ID = AU.ID "
+                + "         LEFT JOIN STYLES S ON B.STYLE_ID = S.ID "
+                + "WHERE B.NAME = :NAME"
+                + "  AND AU.NAME = :AUTHOR_NAME"
+                + "  AND S.NAME = :STYLE_NAME",
+            params,
+            Integer.class);
 
-        return books.size() != 0;
+        return count_rows != 0;
     }
 
     private static class BookMapper implements RowMapper<Book> {
 
         @Override
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Book(rs.getLong("id_book"),
-                    rs.getString("b_name"),
-                    rs.getLong("id_author"),
-                    rs.getLong("id_style"));
+            return new Book(
+                rs.getLong("id"),
+                rs.getString("name"),
+                new Author(rs.getLong("author_id"), rs.getString("author_name")),
+                new Style(rs.getLong("style_id"), rs.getString("style_name"))
+            );
         }
     }
 }
