@@ -5,7 +5,8 @@ import ru.alaev.library_application.service.execption.StyleNotFoundException;
 
 public interface LibraryService {
 
-    boolean addBookOrReturnFalse(String bookName, String author, String style) throws StyleNotFoundException, AuthorNotFoundException;
+    boolean addBookOrReturnFalse(String bookName, String author, String style)
+        throws StyleNotFoundException, AuthorNotFoundException;
 
     String getAllAuthorsInOneString();
 
@@ -14,4 +15,6 @@ public interface LibraryService {
     boolean addNewStyleOrReturnFalse(String name);
 
     String getAllBooksInOneString();
+
+    boolean addNewAuthorOrReturnFalse(String name);
 }

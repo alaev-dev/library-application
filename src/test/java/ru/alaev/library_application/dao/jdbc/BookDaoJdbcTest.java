@@ -1,4 +1,4 @@
-package ru.alaev.library_application.dao.jpa;
+package ru.alaev.library_application.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ComponentScan;
 import ru.alaev.library_application.dao.BookDao;
 import ru.alaev.library_application.domain.Author;
 import ru.alaev.library_application.domain.Book;
 import ru.alaev.library_application.domain.Style;
 
 @JdbcTest
-@Import(BookDaoJdbc.class)
+@ComponentScan("ru.alaev.library_application.dao.jdbc")
 class BookDaoJdbcTest {
 
     public static final String ORWELL_AUTHOR_NAME = "Orwell";
@@ -30,6 +31,7 @@ class BookDaoJdbcTest {
     private static final long ORWELL_STYLE_ID = 1L;
     private static final String ORWELL_WRONG_BOOK_NAME = "1985";
     private static final long WRONG_BOOK_ID = 1984L;
+    @Qualifier("bookDaoJdbc")
     @Autowired
     BookDao bookDao;
 
@@ -37,7 +39,7 @@ class BookDaoJdbcTest {
     void shouldReturnAllBooks() {
         final List<Book> allBooks = bookDao.getAllBooks();
 
-        assertThat(allBooks.stream())
+        assertThat(allBooks.stream().map(Book::getName))
             .hasSize(EXPECTED_COUNT_BOOKS);
     }
 

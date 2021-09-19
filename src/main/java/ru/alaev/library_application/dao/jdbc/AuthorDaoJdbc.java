@@ -1,4 +1,4 @@
-package ru.alaev.library_application.dao.jpa;
+package ru.alaev.library_application.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.alaev.library_application.dao.AuthorDao;
 import ru.alaev.library_application.domain.Author;
+import ru.alaev.library_application.service.execption.AuthorNotFoundException;
 
+@ConditionalOnBean(value = JDBCConfig.class)
 @RequiredArgsConstructor
 @Repository
 public class AuthorDaoJdbc implements AuthorDao {
@@ -40,8 +43,15 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public void saveAuthor(Author author) {
+    public Author saveAuthor(Author author) {
+        jdbc.update("INSERT INTO AUTHORS (NAME) VALUES (:AUTHOR_NAME)",
+            Map.of("AUTHOR_NAME", author.getName()));
 
+        author.setId(
+            getAuthorIdByName(author.getName()).orElseThrow(() -> new AuthorNotFoundException(
+                author.getName())));
+
+        return author;
     }
 
     @Override
@@ -67,6 +77,11 @@ public class AuthorDaoJdbc implements AuthorDao {
                 new AuthorMapper());
 
         return authors.size() == 0 ? Optional.empty() : Optional.of(authors.get(0).getId());
+    }
+
+    @Override
+    public boolean isExistAuthor(String name) {
+        return getAuthorIdByName(name).isPresent();
     }
 
     private static class AuthorMapper implements RowMapper<Author> {

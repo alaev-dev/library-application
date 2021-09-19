@@ -59,7 +59,7 @@ public class LibraryServiceImpl implements LibraryService {
             return false;
         }
 
-        styleDao.save(new Style(name));
+        styleDao.saveStyle(new Style(name));
         return true;
     }
 
@@ -69,5 +69,15 @@ public class LibraryServiceImpl implements LibraryService {
             .map(book -> book.getName() + " " + book.getStyle().getName() + " " + book.getAuthor()
                 .getName())
             .collect(Collectors.joining("\n"));
+    }
+
+    @Override
+    public boolean addNewAuthorOrReturnFalse(String name) {
+        if (authorDao.isExistAuthor(name)) {
+            return false;
+        }
+
+        authorDao.saveAuthor(new Author(null, name));
+        return true;
     }
 }

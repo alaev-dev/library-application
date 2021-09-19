@@ -1,4 +1,4 @@
-package ru.alaev.library_application.dao.jpa;
+package ru.alaev.library_application.dao.jdbc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,19 +6,21 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ComponentScan;
 import ru.alaev.library_application.dao.StyleDao;
 import ru.alaev.library_application.domain.Style;
 
 @JdbcTest
-@Import(StyleDaoJdbc.class)
+@ComponentScan("ru.alaev.library_application.dao.jdbc")
 class StyleDaoJdbcTest {
 
     public static final String NOVEL_NAME = "Novel";
     public static final long EXPECTED_ID_STYLE = 1L;
     public static final String WRONG_NAME_STYLE = "Novell";
     public static final int EXPECTED_COUNT_STYLES = 1;
+    @Qualifier("styleDaoJdbc")
     @Autowired
     StyleDao styleDao;
 

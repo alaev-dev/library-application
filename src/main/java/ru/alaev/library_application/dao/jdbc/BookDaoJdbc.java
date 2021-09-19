@@ -1,4 +1,4 @@
-package ru.alaev.library_application.dao.jpa;
+package ru.alaev.library_application.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import ru.alaev.library_application.domain.Author;
 import ru.alaev.library_application.domain.Book;
 import ru.alaev.library_application.domain.Style;
 
+@ConditionalOnBean(value = JDBCConfig.class)
 @Repository
 @RequiredArgsConstructor
 public class BookDaoJdbc implements BookDao {
@@ -45,7 +47,7 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void saveBook(Book book) {
+    public Book saveBook(Book book) {
         Map<String, Object> params = new HashMap<>();
         params.put("NAME", book.getName());
         params.put("AUTHOR_ID", book.getAuthor().getId());
@@ -55,6 +57,8 @@ public class BookDaoJdbc implements BookDao {
             "INSERT INTO BOOKS(NAME, AUTHOR_ID, STYLE_ID) "
                 + "VALUES (:NAME, :AUTHOR_ID, :STYLE_ID)",
             params);
+
+        return book;
     }
 
     @Override
@@ -94,7 +98,7 @@ public class BookDaoJdbc implements BookDao {
         public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Book(
                 rs.getLong("id"),
-                rs.getString("name"),
+                rs.getString("book_name"),
                 new Author(rs.getLong("author_id"), rs.getString("author_name")),
                 new Style(rs.getLong("style_id"), rs.getString("style_name"))
             );

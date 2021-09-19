@@ -1,16 +1,15 @@
 package ru.alaev.library_application.dao;
 
-import ru.alaev.library_application.domain.Book;
-
 import java.util.List;
 import java.util.Optional;
+import ru.alaev.library_application.domain.Book;
 
 public interface BookDao {
     Optional<Book> getBookById(long id);
 
     List<Book> getAllBooks();
 
-    void saveBook(Book book);
+    Book saveBook(Book book);
 
     void updateBook(Book book);
 
