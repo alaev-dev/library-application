@@ -28,7 +28,14 @@ public class LibraryCommand {
 
     @ShellMethod(key = "addStyle", value = "add new style")
     public String addNewStyle(String name) {
-        return service.addNewStyleOrReturnFalse(name) ? "successfully" : "fail: maybe this style is already exist";
+        return service.addNewStyleOrReturnFalse(name) ? "successfully"
+            : "fail: maybe this style is already exist";
+    }
+
+    @ShellMethod(key = "addAuthor", value = "add new author")
+    public String addNewAuthor(String name) {
+        return service.addNewAuthorOrReturnFalse(name) ? "successfully"
+            : "fail: maybe this style is already exist";
     }
 
     @ShellMethod(key = "books", value = "list all books")

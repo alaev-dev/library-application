@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "use.dataProvider",
+      "type": "java.lang.String",
+      "description": "Which tool to use for data storage."
+    }
+  ]
+}
